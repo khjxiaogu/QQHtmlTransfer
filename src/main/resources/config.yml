@@ -1,0 +1,6 @@
+allowed: 
+  #"group id": "password"
+ssl: false
+keystore: "key.jks"
+keypass: "123456"
+port: 23997

@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>khj's QQ Chat Online</title>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta http-equiv="Content-Script-Type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, user-scalable=no">
+<link href="https://res.khjxiaogu.com/index.css" type="text/css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script>
+var qqgroupid=0;
+var confpassword="123456";//the same as in configuration
+<style>
+.loginBtn{
+height:40px;
+width:100px;
+right:0;
+}
+input,textarea{
+margin: 0;
+display:inline-flex;
+right:0;
+width:100%;
+max-width:274px;
+position: relative;
+border: 1px solid #d1d5da;
+background-color: white;
+padding-top:7px;
+padding-bottom:7px;
+padding-left:3px;
+padding-right:3px;
+}
+textarea{
+font-size:22px!important;
+resize:none;
+height:auto;
+padding: 0;
+margin-right:5px;
+}
+.userhead{
+border-radius:1em 1em 1em 1em;
+height: 2em;
+width: 2em;
+}
+p{
+font-size:18px!important;
+}
+.arrowL:before,.arrowL:after{
+    right: 100%;
+    top: 15px;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+}
+.arrowL:before {
+    border-color: rgba(0, 0, 0, 0);
+    border-right-color: #000000;
+    border-width: 11px;
+    margin-top: -11px;
+}
+.arrowL:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-right-color: #ffffff;
+    border-width: 10px;
+    margin-top: -10px;
+}
+.arrowR:after, .arrowR:before {
+	left: 100%;
+	top: 15px;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.arrowR:after {
+	border-color: rgba(255, 255, 255, 0);
+	border-left-color: #ffffff;
+	border-width: 10px;
+	margin-top: -10px;
+}
+.arrowR:before {
+	border-color: rgba(0, 0, 0, 0);
+	border-left-color: #000000;
+	border-width: 11px;
+	margin-top: -11px;
+}
+.Box img{
+	max-width:100%;
+}
+.at{
+	color:blue;
+	background-color: aquamarine;
+}
+</style>
+</head><body style="background-color: rgb(253, 252, 248);background-repeat: no-repeat;background-size: cover;">
+<div class="navigator"><div><a href="/" >
+<img class="navigateLogo" src="https://res.khjxiaogu.com/logo.png"></a></div>
+<div class="MainTitle"><div>QQ Chat Online</div></div>
+<div class="navigateOth"></div></div>
+<div class="body" id="messages" style="overflow-y:scroll;top:90px">
+
+<div v-for="(item, index) in computedList" v-if="item[6]==0" :id="'msg'+item[2]" :data-index="index" style="display:flex;margin-top:10px;margin-left:auto;margin-right:20px;max-width: 90%;">
+<img style="height:2em;width:2em" class="userhead" name="heads" :data-qq="item[1]" :src="'https://q1.qlogo.cn/g?b=qq&nk='+item[1]+'&s=640'" onerror="this.src='https://res.khjxiaogu.com/piclib/nohead.png'"></img>
+<div style="width:90%">
+<span class="InvTitle">{{ item[0] }}({{ item[1] }})：</span>
+<div class="Box" style="line-height: unset;max-width:100%;width:max-content;margin:0;padding:5px;margin-top:5px">
+<div class="central" style="justify-content:left;text-align:left;display:inline"><p style="justify-content:left;margin:0;width:max-content;max-width:100%"  v-html="item[4]"></p>
+</div></div></div>
+</div></div>
+
+<script>
+
+function autoScroll(){messages.scrollTop=messages.scrollHeight};
+var msgs=new Vue({
+  el: '#messages',
+  data: {
+	list: [
+	]
+  },
+  computed: {
+	computedList: function () {
+	  return this.list;
+	}
+  },
+  methods: {
+	beforeEnter: function (el) {
+	  el.style.opacity = 0
+	  el.style.translateX="-100%"
+	},
+	enter: function (el, done) {
+		var vm = this;
+		//el.innerHTML=transTag(el.innerHTML);
+		//setTimeout(500,function(elm){translateTags(el);});
+		Velocity(
+		  el,
+		  { opacity: 1, translateX: "0" },
+		  { duration: 600,complete: function(){done(elm);} }
+		)
+	},
+	
+	leave: function (el, done) {
+		Velocity(
+		  el,
+		  { opacity: 0 ,translateX: "200%"},
+		  { complete: done }
+		)
+	}
+  }
+});
+function translateTags(el){
+			var e = el.getElementsByTagName('quote');
+			while(e.length){
+			var elm=e[0];
+			if(elm.previousElementSibling&&elm.previousElementSibling.className=="at"){
+				elm.previousElementSibling.remove();
+			}else
+			if(elm.nextElementSibling&&elm.nextElementSibling.className=="at"){
+				elm.nextElementSibling.remove();
+			}
+			var im=document.getElementById('msg'+elm.dataset.mid);
+				if(im!=undefined){
+					var cln=im.cloneNode(true);
+					cln.id="";
+					var dv=document.createElement("div");
+					dv.style["background-color"]="rgba(0,0,0,0.4)";
+					dv.style["padding-bottom"]="10px";
+					dv.appendChild(cln);
+					elm.replaceWith(dv);
+				}else{
+					var dv=document.createElement("div");
+					dv.style["background-color"]="rgba(0,0,0,0.4)";
+					dv.style["padding-bottom"]="10px";
+					dv.innerHTML="[Reply]";
+					elm.replaceWith(dv);
+				}
+			}
+			e = el.getElementsByTagName('emoji');
+			while(e.length){
+				var elm=e[0];
+				var im=document.createElement('img');
+				im.style.width="26px";
+				im.style.height="26px";
+				im.src="https://res.khjxiaogu.com/emoji/qq/"+elm.id.split("_")[1]+".gif";
+				elm.replaceWith(im);
+			}
+			e = el.getElementsByTagName('richmessage');
+			while(e.length){
+				var elm=e[0];
+				var im=document.createElement('p');
+				im.innerText="[Application Message]";
+				elm.replaceWith(im);
+				/*var im=document.createElement('img');
+				im.style.width="26px";
+				im.style.height="26px";
+				im.src="https://res.khjxiaogu.com/emoji/qq/"+elm.id.split("_")[1]+".gif";
+				elm.replaceWith(im);*/
+			}
+		autoScroll();
+		};
+function patchNT(){
+msgs.$nextTick(function(){translateTags(document);});
+}
+var wssocket=new WebSocket("ws://"+document.location.host+"/ws");
+wssocket.onopen=function(){wssocket.send(JSON.stringify({type:"login",group:qqgroupid,password:confpassword}));};
+wssocket.onerror=function(){alert("Websocket connection failure!");};
+wssocket.onmessage = function(ev) {
+	var rev=ev?ev:event;
+	var param=eval("("+rev.data.replace("\r","<br />")+")");
+	if(param.type=="messages"){
+		
+		msgs.list.push(...param.message);
+		patchNT();
+	}else if(param.type=="message"){
+		
+		msgs.list.push(param.message);
+		patchNT();
+	}else if(param.type=="recall"){
+		for(var i=0;i<msgs.list.length;i++){
+			var li=msgs.list[i];
+			if(li[2]==param.id){
+				msgs.list.splice(i,1);
+			}
+		}
+	}else if(param.type=="error"){
+		alert(param.message);
+	}
+};
+
+</script>
+</body>
+</html>
