@@ -153,6 +153,8 @@ public class HtmlMessageTransfer extends PluginBase implements WebsocketEvents,C
     public void onEnable() {
     	if(!new File(this.getDataFolder(),"config.yml").exists()) {
 			try {
+				this.getResources("index.html").transferTo(new FileOutputStream(new File(this.getDataFolder(),"index.html")));
+				this.getResources("index_ssl.html").transferTo(new FileOutputStream(new File(this.getDataFolder(),"index_ssl.html")));
 				this.getResources("config.yml").transferTo(new FileOutputStream(new File(this.getDataFolder(),"config.yml")));
 			}catch (IOException e) {
 				// TODO Auto-generated catch block
