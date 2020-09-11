@@ -2,7 +2,6 @@ package com.khjxiaogu.HtmlMessageTransfer;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyStore;
@@ -18,8 +17,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLException;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -191,22 +188,22 @@ public class HtmlMessageTransfer extends PluginBase implements WebsocketEvents,C
 		}
     	addHandler(MessageChain.class,(msgs,sb,bot)->{for(Message msg:msgs) {handle(msg,sb,bot);}});
     	addHandler(CombinedMessage.class,(msgs,sb,bot)->{handle(msgs.left,sb,bot);handle(msgs.tail,sb,bot);});
-    	addHandler(AtAll.class,(msg,sb,bot)->{sb.append("<span class=\"at\">");sb.append(AtAll.display);sb.append("</span>");});
-    	addHandler(At.class,(msg,sb,bot)->{sb.append("<span class=\"at\">");sb.append(msg.contentToString());sb.append("</span>");});
-    	addHandler(Face.class,(msg,sb,bot)->{sb.append("<emoji id=\"1_");sb.append(msg.getId());sb.append("\"></emoji>");});
+    	addHandler(AtAll.class,(msg,sb,bot)->{sb.append("<span class=\"at\">").append(AtAll.display).append("</span>");});
+    	addHandler(At.class,(msg,sb,bot)->{sb.append("<span class=\"at\">").append(msg.contentToString()).append("</span>");});
+    	addHandler(Face.class,(msg,sb,bot)->{sb.append("<emoji id=\"1_").append(msg.getId()).append("\"></emoji>");});
     	addHandler(ForwardMessage.class,(msg,sb,bot)->{
     		sb.append("<table class=\"transend\">");
     		msg.getNodeList().forEach(node->{
-    			sb.append("<tr><td>");sb.append(node.getTime());sb.append("</td><td>");sb.append(node.getSenderName());sb.append("(");
-    			sb.append(node.getSenderId());sb.append(")");sb.append("</td><td>");handle(node.getMessage(),sb,bot);sb.append("</td></tr>");});
+    			sb.append("<tr><td>");sb.append(node.getTime()).append("</td><td>").append(node.getSenderName()).append("(");
+    			sb.append(node.getSenderId());sb.append(")").append("</td><td>");handle(node.getMessage(),sb,bot);sb.append("</td></tr>");});
     		sb.append("</table>");});
     	addHandler(Voice.class,(msg,sb,bot)->{sb.append("<audio controls src=\"").append(msg.getUrl()).append("\" />");});
-    	addHandler(PokeMessage.class,(msg,sb,bot)->{sb.append("<poke data-type=\""+msg.getType()+"\">"+msg.getName()+"</poke>");});
-    	addHandler(FlashImage.class,(msg,sb,bot)->{sb.append("<p class=\"flashimage\"></p>");sb.append("<img src=\"");sb.append(bot.queryImageUrl(msg.getImage()));sb.append("\"></img>");});
-    	addHandler(Image.class,(msg,sb,bot)->{sb.append("<img src=\"");sb.append(bot.queryImageUrl(msg));sb.append("\"></img>");});
+    	addHandler(PokeMessage.class,(msg,sb,bot)->{sb.append("<poke data-type=\"").append(msg.getType()).append("\">").append(msg.getName()).append("</poke>");});
+    	addHandler(FlashImage.class,(msg,sb,bot)->{sb.append("<p class=\"flashimage\"></p>").append("<img src=\"").append(bot.queryImageUrl(msg.getImage())).append("\"></img>");});
+    	addHandler(Image.class,(msg,sb,bot)->{sb.append("<img src=\"").append(bot.queryImageUrl(msg)).append("\"></img>");});
     	addHandler(PlainText.class,(msg,sb,bot)->{sb.append(msg.getContent().replace("\r","<br />"));});
-    	addHandler(QuoteReply.class,(msg,sb,bot)->{sb.append("<quote data-mid=\"");sb.append(msg.getSource().getId());sb.append("\"></quote>");});
-    	addHandler(RichMessage.class,(msg,sb,bot)->{sb.append("<richmessage data-type=\"");sb.append(msg.getClass().getSimpleName());sb.append("\">");sb.append(msg.contentToString());sb.append("</richmessage>");});
+    	addHandler(QuoteReply.class,(msg,sb,bot)->{sb.append("<quote data-mid=\"").append(msg.getSource().getId()).append("\"></quote>");});
+    	addHandler(RichMessage.class,(msg,sb,bot)->{sb.append("<richmessage data-type=\"").append(msg.getClass().getSimpleName()).append("\">").append(msg.contentToString()).append("</richmessage>");});
     	addHandler(MessageSource.class,(msg,sb,bot)->{});//do nothing
         this.getEventListener().subscribeAlways(GroupMessageEvent.class, event -> {
         	long id=event.getSource().getGroup().getId();
