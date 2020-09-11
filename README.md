@@ -15,3 +15,5 @@ change to your group id and public password.
 6. Open the website, you would see message from qq group show in page instantly.
 # Warning
 It's for test use only, should not be use in production fields. There's no safety promise for this. 
+# Dependencies
+[KWebServer](https://github.com/khjxiaogu/KWebServer)
