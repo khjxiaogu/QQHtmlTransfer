@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -146,13 +148,25 @@ public class HtmlMessageTransfer extends PluginBase implements WebsocketEvents,C
 	Map<Long,String> groups=new ConcurrentHashMap<>();
 	Map<Long,List<JsonArray>> msgs=new ConcurrentHashMap<>();
 	Map<Long,String> avatars=new ConcurrentHashMap<>();
+	public static void transfer(InputStream i,OutputStream o) throws IOException {
+		int nRead;
+		byte[] data = new byte[4096];
+
+		try {
+			while ((nRead = i.read(data, 0, data.length)) != -1)
+				o.write(data, 0, nRead);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw e;
+		}
+	}
     @Override
     public void onEnable() {
     	if(!new File(this.getDataFolder(),"config.yml").exists()) {
 			try {
-				this.getResources("index.html").transferTo(new FileOutputStream(new File(this.getDataFolder(),"index.html")));
-				this.getResources("index_ssl.html").transferTo(new FileOutputStream(new File(this.getDataFolder(),"index_ssl.html")));
-				this.getResources("config.yml").transferTo(new FileOutputStream(new File(this.getDataFolder(),"config.yml")));
+				transfer(this.getResources("index.html"),new FileOutputStream(new File(this.getDataFolder(),"index.html")));
+				transfer(this.getResources("index_ssl.html"),new FileOutputStream(new File(this.getDataFolder(),"index_ssl.html")));
+				transfer(this.getResources("config.yml"),new FileOutputStream(new File(this.getDataFolder(),"config.yml")));
 			}catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -200,7 +214,7 @@ public class HtmlMessageTransfer extends PluginBase implements WebsocketEvents,C
     	addHandler(Voice.class,(msg,sb,bot)->{sb.append("<audio controls src=\"").append(msg.getUrl()).append("\" />");});
     	addHandler(PokeMessage.class,(msg,sb,bot)->{sb.append("<poke data-type=\"").append(msg.getType()).append("\">").append(msg.getName()).append("</poke>");});
     	addHandler(FlashImage.class,(msg,sb,bot)->{sb.append("<p class=\"flashimage\"></p>").append("<img src=\"").append(bot.queryImageUrl(msg.getImage())).append("\"></img>");});
-    	addHandler(Image.class,(msg,sb,bot)->{sb.append("<img src=\"").append(bot.queryImageUrl(msg)).append("\"></img>");});
+    	addHandler(Image.class,(msg,sb,bot)->{sb.append("<img referrerpolicy=\"no-referrer\" src=\"").append(bot.queryImageUrl(msg)).append("\"></img>");});
     	addHandler(PlainText.class,(msg,sb,bot)->{sb.append(msg.getContent().replace("\r","<br />"));});
     	addHandler(QuoteReply.class,(msg,sb,bot)->{sb.append("<quote data-mid=\"").append(msg.getSource().getId()).append("\"></quote>");});
     	addHandler(RichMessage.class,(msg,sb,bot)->{sb.append("<richmessage data-type=\"").append(msg.getClass().getSimpleName()).append("\">").append(msg.contentToString()).append("</richmessage>");});
